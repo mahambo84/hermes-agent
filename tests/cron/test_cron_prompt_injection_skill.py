@@ -234,3 +234,25 @@ class TestBuildJobPromptScansSkillContent:
         prompt = scheduler._build_job_prompt(job)
         assert prompt is not None
         assert "could not be found" in prompt
+
+
+class TestBuildJobPromptSanitizesScriptOutput:
+    def test_script_output_zwsp_stripped_before_scan(self, cron_env, monkeypatch):
+        """Collect stdout may contain Telegram zero-width spaces; must not block the agent."""
+        _, scheduler = cron_env
+        dirty = '{"items": ["line\u200bwith zwsp"]}'
+        monkeypatch.setattr(
+            scheduler,
+            "_run_job_script",
+            lambda _path: (True, dirty),
+        )
+        job = {
+            "id": "job-collect",
+            "name": "digest",
+            "prompt": "summarize",
+            "script": "collect.py",
+        }
+        prompt = scheduler._build_job_prompt(job)
+        assert prompt is not None
+        assert "\u200b" not in prompt
+        assert "linewith zwsp" in prompt

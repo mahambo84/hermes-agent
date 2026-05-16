@@ -71,6 +71,15 @@ _CRON_INVISIBLE_CHARS = {
 }
 
 
+def strip_cron_invisible_chars(text: str) -> str:
+    """Remove zero-width / bidi control chars from cron script context (not user prompts)."""
+    if not text:
+        return text
+    for char in _CRON_INVISIBLE_CHARS:
+        text = text.replace(char, "")
+    return text
+
+
 def _scan_cron_prompt(prompt: str) -> str:
     """Scan a cron prompt for critical threats. Returns error string if blocked, else empty."""
     github_auth_header = re.search(

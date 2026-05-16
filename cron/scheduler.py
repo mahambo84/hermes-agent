@@ -869,6 +869,9 @@ def _build_job_prompt(job: dict, prerun_script: Optional[tuple] = None) -> str:
             success, script_output = _run_job_script(script_path)
         if success:
             if script_output:
+                from tools.cronjob_tools import strip_cron_invisible_chars
+
+                script_output = strip_cron_invisible_chars(script_output)
                 prompt = (
                     "## Script Output\n"
                     "The following data was collected by a pre-run script. "
@@ -880,6 +883,9 @@ def _build_job_prompt(job: dict, prerun_script: Optional[tuple] = None) -> str:
                 # Script produced no output — nothing to report, skip AI call.
                 return None
         else:
+            from tools.cronjob_tools import strip_cron_invisible_chars
+
+            script_output = strip_cron_invisible_chars(script_output)
             prompt = (
                 "## Script Error\n"
                 "The data-collection script failed. Report this to the user.\n\n"
@@ -914,6 +920,9 @@ def _build_job_prompt(job: dict, prerun_script: Optional[tuple] = None) -> str:
                 _MAX_CONTEXT_CHARS = 8000
                 if len(latest_output) > _MAX_CONTEXT_CHARS:
                     latest_output = latest_output[:_MAX_CONTEXT_CHARS] + "\n\n[... output truncated ...]"
+                from tools.cronjob_tools import strip_cron_invisible_chars
+
+                latest_output = strip_cron_invisible_chars(latest_output)
                 if latest_output:
                     prompt = (
                         f"## Output from job '{source_job_id}'\n"
