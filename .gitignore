@@ -17,6 +17,7 @@ __pycache__/model_tools.cpython-310.pyc
 __pycache__/web_tools.cpython-310.pyc
 logs/
 data/
+tinker-atropos/
 .pytest_cache/
 tmp/
 temp_vision_images/
